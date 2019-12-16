@@ -776,6 +776,7 @@ var IpPhoneService = /** @class */ (function () {
         this._snackBar = _snackBar;
         this.httpOptions = {
             headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]({
+                'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json'
             })
         };
@@ -1061,6 +1062,7 @@ var LoginServiceService = /** @class */ (function () {
         this.router = router;
         this.httpOptions = {
             headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]({
+                'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json'
             })
         };

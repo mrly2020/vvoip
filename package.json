@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~8.2.0",
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
+    "Blob": "^0.10.0",
     "BlobBuilder": "^0.10.0",
     "File": "^0.10.2",
     "angular-webstorage-service": "^1.0.2",

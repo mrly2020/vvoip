@@ -112,7 +112,6 @@ export class KeypadComponent implements OnInit {
   }
 
   keyAction(id) {
-    console.log(id);
     if (id != "call" && id != "call_end"){
       //number button push
       this.dialNo += id;

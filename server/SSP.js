@@ -29,8 +29,7 @@ RTCPeerConnection = wrtc.RTCPeerConnection;
 RTCSessionDescription = wrtc.RTCSessionDescription;
 RTCIceCandidate = wrtc.RTCIceCandidate;
 
-var peer = new Peer('ISP', {host: 'localhost', port: 9000, path: '/operator'});
-var calls = [];
+var peer = new Peer('SSP', {host: 'localhost', port: 9000, path: '/operator'});
 var conns = [];
 
 wss.on('connection', function connection(ws) {
@@ -39,11 +38,11 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message);
 
-    if (message.type == 'register'){
+    if (message.command == 'register'){
       conns.push({id: message.id, conn: ws});
     }
 
-    else if (message.type == 'hangUp'){
+    else if (message.command == 'BYE'){
       let outgoing;
       conns.forEach(peerConn => {
         if (peerConn.id == message.hangUpOn){
@@ -55,7 +54,7 @@ wss.on('connection', function connection(ws) {
       }
     }
 
-    else if (message.type == 'send_to_voicemail'){
+    else if (message.command == 'ACK<SEND_TO_VOICEMAIL>'){
       let outgoing;
       conns.forEach(peerConn => {
         if (peerConn.id == message.caller){
@@ -225,7 +224,7 @@ function shareCallerContactKey(metadata, call, current, stream1, forwardable){
       sql += '"'+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+'", "'+date.toTimeString().substring(0, 8)+'", NULL);';
       connection.query(sql, function (err, result) { if (err) throw err; });
 
-      forwarding(stream1, metadata, current, date);
+      LUF_LRF(stream1, metadata, current, date);
     }
 
     //deliver send_to_voicemail message if we are honest about not knowing their key
@@ -243,7 +242,7 @@ function shareCallerContactKey(metadata, call, current, stream1, forwardable){
         }
       });
       if (outgoing != null){
-        outgoing.send(JSON.stringify({type: 'send_to_voicemail', caller: call.peer}));
+        outgoing.send(JSON.stringify({command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.peer}));
         console.log('Caller connected to voicemail!');
       }
     }
@@ -251,15 +250,21 @@ function shareCallerContactKey(metadata, call, current, stream1, forwardable){
 }
 
 //forwards the call to the end user if proper key is held
-function forwarding(stream1, metadata, current, date){
+function LUF_LRF(stream1, metadata, current, date){
 
-  let proxyCall = peer.call(metadata.target, stream1, {metadata: metadata});
+  let trimmedData = {
+    command: metadata.command,
+    cid: metadata.cid,
+    caller: metadata.caller,
+    target: metadata.target
+  };
+  let proxyCall = peer.call(metadata.target, stream1, {metadata: trimmedData});
   current.forward = proxyCall;
 
   proxyCall.on('stream', (stream2) => {
     //return target stream to caller
     console.log('Call answered!');
-    fullCircuit(stream2, metadata, current, date);
+    fullCircuit(stream2, trimmedData, current, date);
   });
 
   proxyCall.on('close', function(){

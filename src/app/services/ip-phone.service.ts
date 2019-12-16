@@ -76,14 +76,18 @@ export class IpPhoneService {
     this.peer.on('call', (call) => {
 
       //check if response to originated call
-      if (!call.metadata.status && my.callConnection != null){
+      if (!call.metadata.status && my.callConnection != null && call.metadata.command == 'INVITE'){
+        console.log(JSON.stringify(call.metadata));
+
         console.log('i am busy, go away');
         call.answer(null);
         call.close();
-        my.dataConn.send(JSON.stringify({type: 'send_to_voicemail', caller: call.metadata.caller}));
+        my.dataConn.send(JSON.stringify({command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller}));
       }
 
-      else if (!call.metadata.status) {
+      else if (!call.metadata.status && call.metadata.command == 'INVITE') {
+        console.log(JSON.stringify(call.metadata));
+
         openConnection.emit({ringing: true, incoming: true, number: call});
         phoneTones.src = '../../assets/ringing_tone.mp3';
         phoneTones.play();
@@ -131,7 +135,7 @@ export class IpPhoneService {
               phoneTones.src = '';
               call.answer(null);
               call.close();
-              my.dataConn.send(JSON.stringify({type: 'send_to_voicemail', caller: call.metadata.caller}));
+              my.dataConn.send(JSON.stringify({command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller}));
               userInteractionSub._subscriptions[0].unsubscribe();
             }
           }
@@ -149,14 +153,17 @@ export class IpPhoneService {
     let ws = new WebSocket('ws://'+env.PEERSERVERHOST+':9001');
     this.dataConn = ws;
     ws.onmessage = function incoming(event) {
+
       if (event.data == 'register'){
-        this.send(JSON.stringify({type: 'register', id: phoneNo}));
+        this.send(JSON.stringify({command: 'register', id: phoneNo}));
       }
       else if (event.data == 'false_key'){
         //falsified contact or id key
         my._snackBar.open('False user keys provided.', 'Dismiss', {
-          duration: 5000,
+          duration: 10000,
         });
+
+        console.error('FALSE KEYS');
 
         my.callConnection.close();
         my.callConnection = null;
@@ -164,7 +171,7 @@ export class IpPhoneService {
       }
       else{
         let data = JSON.parse(event.data);
-        if (data.type == 'hangUp'){
+        if (data.command == 'BYE'){
 
           my.callConnection.close();
           if (my.callbackConnection != null){
@@ -172,7 +179,7 @@ export class IpPhoneService {
           }
 
         }
-        else if (data.type == 'send_to_voicemail'){
+        else if (data.command == 'ACK<SEND_TO_VOICEMAIL>'){
           //for voicemail on decline call, busy, and timeout
           my.voicemail = true;
           my.openConnection.emit({ringing: false, incoming: false, number: my.callConnection});
@@ -195,8 +202,10 @@ export class IpPhoneService {
 
     navigator.mediaDevices.getUserMedia({video: false, audio: true})
     .then(function(stream) {
-      const call = peer.call('ISP', stream, { metadata:
-        { cid: myCid,
+      const call = peer.call('SSP', stream, { metadata:
+        {
+          command: 'INVITE',
+          cid: myCid,
           caller: myNumber,
           callerContactKey: my.falseContactKey ? 'false_value' : contact_key,
           callerIdKey: my.falseIdKey ? 'false_id' : id_key,
@@ -205,6 +214,7 @@ export class IpPhoneService {
         }
       });
 
+      console.log("SENDING " + JSON.stringify(call.metadata));
       my.callConnection = call;
       openConnection.emit({ringing: true, incoming: false, number: call});
 
@@ -291,7 +301,7 @@ export class IpPhoneService {
       this.dataConn.send(
         JSON.stringify(
           {
-            type: 'hangUp',
+            command: 'BYE',
             hangUpOn: (this.callConnection.metadata.caller == myNumber ? this.callConnection.metadata.target : this.callConnection.metadata.caller)
           }
         )

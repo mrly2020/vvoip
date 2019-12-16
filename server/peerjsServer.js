@@ -22,6 +22,6 @@ peerServer.on('disconnect', function(id) {
 });
 
 app.use('/operator', peerServer);
-require('./ISP');
+require('./SSP');
 
 module.exports = peerServer;

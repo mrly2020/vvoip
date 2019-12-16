@@ -804,7 +804,7 @@ let IpPhoneService = class IpPhoneService {
                 console.log('i am busy, go away');
                 call.answer(null);
                 call.close();
-                my.dataConn.send(JSON.stringify({ type: 'send_to_voicemail', caller: call.metadata.caller }));
+                my.dataConn.send(JSON.stringify({ command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller }));
             }
             else if (!call.metadata.status) {
                 openConnection.emit({ ringing: true, incoming: true, number: call });
@@ -846,7 +846,7 @@ let IpPhoneService = class IpPhoneService {
                             phoneTones.src = '';
                             call.answer(null);
                             call.close();
-                            my.dataConn.send(JSON.stringify({ type: 'send_to_voicemail', caller: call.metadata.caller }));
+                            my.dataConn.send(JSON.stringify({ command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller }));
                             userInteractionSub._subscriptions[0].unsubscribe();
                         }
                     }
@@ -864,7 +864,7 @@ let IpPhoneService = class IpPhoneService {
         this.dataConn = ws;
         ws.onmessage = function incoming(event) {
             if (event.data == 'register') {
-                this.send(JSON.stringify({ type: 'register', id: phoneNo }));
+                this.send(JSON.stringify({ command: 'register', id: phoneNo }));
             }
             else if (event.data == 'false_key') {
                 //falsified contact or id key
@@ -877,13 +877,13 @@ let IpPhoneService = class IpPhoneService {
             }
             else {
                 let data = JSON.parse(event.data);
-                if (data.type == 'hangUp') {
+                if (data.command == 'BYE') {
                     my.callConnection.close();
                     if (my.callbackConnection != null) {
                         my.callbackConnection.close();
                     }
                 }
-                else if (data.type == 'send_to_voicemail') {
+                else if (data.command == 'ACK<SEND_TO_VOICEMAIL>') {
                     //for voicemail on decline call, busy, and timeout
                     my.voicemail = true;
                     my.openConnection.emit({ ringing: false, incoming: false, number: my.callConnection });
@@ -904,7 +904,9 @@ let IpPhoneService = class IpPhoneService {
         let endConnection = this.endConnection;
         navigator.mediaDevices.getUserMedia({ video: false, audio: true })
             .then(function (stream) {
-            const call = peer.call('ISP', stream, { metadata: { cid: myCid,
+            const call = peer.call('ISP', stream, { metadata: {
+                    command: 'INVITE',
+                    cid: myCid,
                     caller: myNumber,
                     callerContactKey: my.falseContactKey ? 'false_value' : contact_key,
                     callerIdKey: my.falseIdKey ? 'false_id' : id_key,
@@ -980,7 +982,7 @@ let IpPhoneService = class IpPhoneService {
     hangUp(myNumber) {
         if (!this.voicemail) {
             this.dataConn.send(JSON.stringify({
-                type: 'hangUp',
+                command: 'BYE',
                 hangUpOn: (this.callConnection.metadata.caller == myNumber ? this.callConnection.metadata.target : this.callConnection.metadata.caller)
             }));
         }
@@ -1101,10 +1103,8 @@ LoginServiceService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "env", function() { return env; });
 const env = {
-    //backendURL: "http://localhost:8080",
-    //PEERSERVERHOST: "localhost",
-    backendURL: 'http://ec2-3-14-127-235.us-east-2.compute.amazonaws.com:8080',
-    PEERSERVERHOST: 'ec2-3-14-127-235.us-east-2.compute.amazonaws.com'
+    backendURL: "http://localhost:8080",
+    PEERSERVERHOST: "localhost",
 };
 
 

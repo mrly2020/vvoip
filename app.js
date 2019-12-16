@@ -5,7 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 var ExpressPeerServer = require('peer').ExpressPeerServer;
 
-var clientPort = process.env.CLIENT_PORT || 8081;        // set our port
+var clientPort = process.env.CLIENT_PORT || 80;        // set our port
 var serverPort = process.env.SERVER_PORT || 8080;        // set our port
 
 const app = express()

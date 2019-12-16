@@ -821,7 +821,7 @@ var IpPhoneService = /** @class */ (function () {
                 console.log('i am busy, go away');
                 call.answer(null);
                 call.close();
-                my.dataConn.send(JSON.stringify({ type: 'send_to_voicemail', caller: call.metadata.caller }));
+                my.dataConn.send(JSON.stringify({ command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller }));
             }
             else if (!call.metadata.status) {
                 openConnection.emit({ ringing: true, incoming: true, number: call });
@@ -863,7 +863,7 @@ var IpPhoneService = /** @class */ (function () {
                             phoneTones.src = '';
                             call.answer(null);
                             call.close();
-                            my.dataConn.send(JSON.stringify({ type: 'send_to_voicemail', caller: call.metadata.caller }));
+                            my.dataConn.send(JSON.stringify({ command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller }));
                             userInteractionSub._subscriptions[0].unsubscribe();
                         }
                     }
@@ -881,7 +881,7 @@ var IpPhoneService = /** @class */ (function () {
         this.dataConn = ws;
         ws.onmessage = function incoming(event) {
             if (event.data == 'register') {
-                this.send(JSON.stringify({ type: 'register', id: phoneNo }));
+                this.send(JSON.stringify({ command: 'register', id: phoneNo }));
             }
             else if (event.data == 'false_key') {
                 //falsified contact or id key
@@ -894,13 +894,13 @@ var IpPhoneService = /** @class */ (function () {
             }
             else {
                 var data = JSON.parse(event.data);
-                if (data.type == 'hangUp') {
+                if (data.command == 'BYE') {
                     my.callConnection.close();
                     if (my.callbackConnection != null) {
                         my.callbackConnection.close();
                     }
                 }
-                else if (data.type == 'send_to_voicemail') {
+                else if (data.command == 'ACK<SEND_TO_VOICEMAIL>') {
                     //for voicemail on decline call, busy, and timeout
                     my.voicemail = true;
                     my.openConnection.emit({ ringing: false, incoming: false, number: my.callConnection });
@@ -921,7 +921,9 @@ var IpPhoneService = /** @class */ (function () {
         var endConnection = this.endConnection;
         navigator.mediaDevices.getUserMedia({ video: false, audio: true })
             .then(function (stream) {
-            var call = peer.call('ISP', stream, { metadata: { cid: myCid,
+            var call = peer.call('ISP', stream, { metadata: {
+                    command: 'INVITE',
+                    cid: myCid,
                     caller: myNumber,
                     callerContactKey: my.falseContactKey ? 'false_value' : contact_key,
                     callerIdKey: my.falseIdKey ? 'false_id' : id_key,
@@ -997,7 +999,7 @@ var IpPhoneService = /** @class */ (function () {
     IpPhoneService.prototype.hangUp = function (myNumber) {
         if (!this.voicemail) {
             this.dataConn.send(JSON.stringify({
-                type: 'hangUp',
+                command: 'BYE',
                 hangUpOn: (this.callConnection.metadata.caller == myNumber ? this.callConnection.metadata.target : this.callConnection.metadata.caller)
             }));
         }
@@ -1121,10 +1123,8 @@ var LoginServiceService = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "env", function() { return env; });
 var env = {
-    //backendURL: "http://localhost:8080",
-    //PEERSERVERHOST: "localhost",
-    backendURL: 'http://ec2-3-14-127-235.us-east-2.compute.amazonaws.com:8080',
-    PEERSERVERHOST: 'ec2-3-14-127-235.us-east-2.compute.amazonaws.com'
+    backendURL: "http://localhost:8080",
+    PEERSERVERHOST: "localhost",
 };
 
 

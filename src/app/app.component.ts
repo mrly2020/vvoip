@@ -44,6 +44,7 @@ export class AppComponent {
 
   logout(){
     this.loginService.logout();
+    this.ipPhoneService.meltdown();
     this.router.navigate(['login']);
   }
 }

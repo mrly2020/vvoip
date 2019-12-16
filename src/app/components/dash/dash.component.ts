@@ -40,6 +40,10 @@ export class DashComponent implements OnInit {
     this.ipPhoneService.connect(String(this.personalNo));
   }
 
+  ngOnDestroy(){
+    this.ipPhoneService.meltdown();
+  }
+
   maxHeight(){
     //toolbar is 56 px
     return (document.getElementById('wrapper').clientHeight - 56) + 'px';

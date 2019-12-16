@@ -1,5 +1,5 @@
 import { ContactObject } from '../../assets/contactObject';
-import { Injectable, Inject, Output, EventEmitter } from '@angular/core';
+import { Injectable, Inject, Output, EventEmitter, HostListener } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subscriber } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -58,6 +58,20 @@ export class IpPhoneService {
 
   falsifyContact(value: Boolean){
     this.falseContactKey = value;
+  }
+  
+  @HostListener('window:beforeunload', [ '$event' ])
+  beforeUnloadHander(event) {
+    this.meltdown();
+  }
+
+  meltdown(){
+    try{
+      this.peer.destroy();
+      this.dataConn.close();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   //register with Peer Server

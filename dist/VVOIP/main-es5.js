@@ -603,7 +603,6 @@ var KeypadComponent = /** @class */ (function () {
     };
     KeypadComponent.prototype.keyAction = function (id) {
         var _this = this;
-        console.log(id);
         if (id != "call" && id != "call_end") {
             //number button push
             this.dialNo += id;
@@ -817,13 +816,15 @@ var IpPhoneService = /** @class */ (function () {
         var endConnection = this.endConnection;
         this.peer.on('call', function (call) {
             //check if response to originated call
-            if (!call.metadata.status && my.callConnection != null) {
+            if (!call.metadata.status && my.callConnection != null && call.metadata.command == 'INVITE') {
+                console.log(JSON.stringify(call.metadata));
                 console.log('i am busy, go away');
                 call.answer(null);
                 call.close();
                 my.dataConn.send(JSON.stringify({ command: 'ACK<SEND_TO_VOICEMAIL>', caller: call.metadata.caller }));
             }
-            else if (!call.metadata.status) {
+            else if (!call.metadata.status && call.metadata.command == 'INVITE') {
+                console.log(JSON.stringify(call.metadata));
                 openConnection.emit({ ringing: true, incoming: true, number: call });
                 phoneTones.src = '../../assets/ringing_tone.mp3';
                 phoneTones.play();
@@ -886,8 +887,9 @@ var IpPhoneService = /** @class */ (function () {
             else if (event.data == 'false_key') {
                 //falsified contact or id key
                 my._snackBar.open('False user keys provided.', 'Dismiss', {
-                    duration: 5000,
+                    duration: 10000,
                 });
+                console.error('FALSE KEYS');
                 my.callConnection.close();
                 my.callConnection = null;
                 my.endConnection.emit(null);
@@ -921,7 +923,7 @@ var IpPhoneService = /** @class */ (function () {
         var endConnection = this.endConnection;
         navigator.mediaDevices.getUserMedia({ video: false, audio: true })
             .then(function (stream) {
-            var call = peer.call('ISP', stream, { metadata: {
+            var call = peer.call('SSP', stream, { metadata: {
                     command: 'INVITE',
                     cid: myCid,
                     caller: myNumber,
@@ -931,6 +933,7 @@ var IpPhoneService = /** @class */ (function () {
                     targetContactKey: my.falseContactKey ? 'falsevalue' : target_contact_key
                 }
             });
+            console.log("SENDING " + JSON.stringify(call.metadata));
             my.callConnection = call;
             openConnection.emit({ ringing: true, incoming: false, number: call });
             call.on('stream', function (remoteStream) {
@@ -1123,8 +1126,10 @@ var LoginServiceService = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "env", function() { return env; });
 var env = {
-    backendURL: "http://localhost:8080",
-    PEERSERVERHOST: "localhost",
+    //backendURL: "http://localhost:8080",
+    //PEERSERVERHOST: "localhost",
+    backendURL: 'http://ec2-3-14-127-235.us-east-2.compute.amazonaws.com:8080',
+    PEERSERVERHOST: 'ec2-3-14-127-235.us-east-2.compute.amazonaws.com'
 };
 
 

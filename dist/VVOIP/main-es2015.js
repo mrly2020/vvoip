@@ -1101,8 +1101,10 @@ LoginServiceService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "env", function() { return env; });
 const env = {
-    backendURL: "http://localhost:8080",
-    PEERSERVERHOST: "localhost",
+    //backendURL: "http://localhost:8080",
+    //PEERSERVERHOST: "localhost",
+    backendURL: 'http://ec2-3-14-127-235.us-east-2.compute.amazonaws.com:8080',
+    PEERSERVERHOST: 'ec2-3-14-127-235.us-east-2.compute.amazonaws.com'
 };
 
 

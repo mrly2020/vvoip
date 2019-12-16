@@ -1,0 +1,20 @@
+{
+  "contactSets":[
+    {
+      "username": "202-167-9832",
+      "knownKeys": [
+
+      ],
+    },
+    {
+      "username": "212-667-0921",
+      "knownKeys": [
+        {
+          "name": "Harvey McDemo",
+          "number": "202-167-9832",
+          "contactKey": "#"
+        }
+      ],
+    },
+  ]
+}

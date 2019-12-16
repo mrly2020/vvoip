@@ -1,0 +1,49 @@
+<div id='keypad'>
+  <mat-card *ngIf='!(callInProgress || ringing)' id="keypadGrid">
+    <div class="numberWrapper">
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Phone Number</mat-label>
+        <input type="text" matInput [(ngModel)]="dialNo">
+      </mat-form-field>
+
+    </div>
+
+    <ng-container *ngFor="let keyButton of buttons">
+      <button *ngIf="keyButton.id != 'call_end' && keyButton.id != 'call'; else elseBlock" class="keypadButton"
+      mat-raised-button id={{keyButton.id}} (click)="keyAction(keyButton.id)" disabled={{callInProgress}}>
+        {{keyButton.id}}
+      </button>
+
+      <ng-template #elseBlock>
+        <button mat-raised-button id={{keyButton.id}} (click)="keyAction(keyButton.id)"
+        color="{{keyButton.id == 'call' ? 'primary':'warn'}}" isRoundButton=true class="keypadButton">
+          <mat-icon>{{keyButton.id}}</mat-icon>
+        </button>
+      </ng-template>
+    </ng-container>
+  </mat-card>
+
+  <mat-card *ngIf='(callInProgress || ringing)' id='currentCall'>
+    <h1> {{incoming ? currentCall.cid : getName(currentCall.number)}} </h1>
+    <h3> ( {{currentCall.number}} ) </h3>
+
+    <h2> {{callLength() | date: 'mm:ss' }} </h2>
+
+    <button *ngIf='!(incoming && ringing)' mat-raised-button class='centerButton' id='call_end'
+    (click)="keyAction('call_end')" color="{{ringing ? 'link' : 'warn'}}" isRoundButton=true>
+      <span id='call_end' *ngIf='callInProgress'> End Call <mat-icon>call_end</mat-icon> </span>
+      <span *ngIf='ringing'> Ringing... </span>
+    </button>
+
+    <button *ngIf='incoming && ringing' mat-raised-button class='centerButton' id='answer'
+    (click)="answerIncomingCall()" color="primary" isRoundButton=true>
+      <span> Answer <mat-icon>call_end</mat-icon> </span>
+    </button>
+
+    <button *ngIf='incoming && ringing' mat-raised-button class='centerButton' id='decline'
+    (click)="declineIncomingCall()" color="warn" isRoundButton=true>
+      <span> Decline <mat-icon>call_end</mat-icon> </span>
+    </button>
+
+  </mat-card>
+</div>

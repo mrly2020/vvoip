@@ -1,0 +1,32 @@
+<div id="grid-container">
+  <div id="particles-js"></div>
+  <mat-card>
+    <div id='split'>
+      <div style='border-right: 1px solid rgba(0,0,0,.2);'>
+        <mat-icon id="logo">call</mat-icon>
+        <h3>Welcome to my VVOIP Demo.</h3>
+
+        <form [formGroup]='loginForm' (ngSubmit)="sendLogin()">
+          <mat-form-field>
+            <input matInput type="number" placeholder="Phone No." formControlName='phone'>
+            <mat-error *ngIf="loginForm.controls.phone.errors != null"> {{loginForm.controls.phone.errors.required == true ?
+            'Phone Required' : loginForm.controls.phone.errors.wrong}} </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput type="password" placeholder="Password" formControlName='password'>
+          </mat-form-field>
+          <button type="submit" [disabled]="!loginForm.valid" style="display:none"> Submit </button>
+        </form>
+
+        <button mat-raised-button routerLink='/register'> Create An Account </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="!loginForm.valid" (click)="sendLogin()"> Submit </button>
+      </div>
+
+      <p>
+        This is an educational project by Daniel Marley for Prof. Heller's Computer Networks Course at The George Washington University Department of Computer Science.
+        <br><br>
+        No personal information should be placed on this service and none should be divulged over a call, as it may be listened to. Use of this project is an acceptance of these terms.
+      </p>
+    </div>
+  </mat-card>
+</div>

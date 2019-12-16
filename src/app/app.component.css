@@ -1,0 +1,28 @@
+mat-toolbar{
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+}
+
+#wrapper{
+  display: flex;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: hidden;
+}
+
+.grid-format{
+  display: grid !important;
+  grid-template: "a" 64px
+                 "b" 1fr / 100%;
+}
+
+#right-hand{
+  position: absolute;
+  right: 15px;
+  display: inline-flex;
+}
+
+#logout{
+  margin-left: 15px;
+}

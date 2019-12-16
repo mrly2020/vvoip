@@ -1,0 +1,18 @@
+<div id="wrapper" [ngClass]="{'grid-format': this.authenticated()}">
+  <mat-toolbar *ngIf="this.authenticated()" color="primary">
+    Verified VOIP
+
+    <div id="right-hand">
+      <span style='font-size: 11pt; margin-right: 20px;'>
+        <mat-checkbox style='margin-right: 10px;' (change)='falseIdKey($event)'>Falsify ID Key</mat-checkbox>
+        <mat-checkbox (change)='falseContactKey($event)'>Falsify Contact Key</mat-checkbox>
+      </span>
+      <h3>Hi, {{username}}</h3>
+      <button mat-raised-button id="logout" (click)="logout()">Logout</button>
+    </div>
+  </mat-toolbar>
+
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

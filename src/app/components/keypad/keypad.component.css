@@ -1,0 +1,59 @@
+#keypad{
+  height: 100%;
+  max-height: 100%;
+}
+
+#keypadGrid{
+  height: 96%;
+  display: grid;
+  grid-template:  "a a a" .5fr
+                  "b c d" 1fr
+                  "e f g" 1fr
+                  "h i j" 1fr
+                  "k l m" 1fr / 1fr 1fr 1fr;
+  grid-gap: 4%;
+}
+
+.numberWrapper{
+  width: 100%;
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.keypadButton{
+  font-size: 28pt !important;
+}
+
+#currentCall{
+  background-color: #202020;
+  color: #eeeeee;
+  height: 100%;
+  border-radius: 0px;
+}
+
+#currentCall>h1{
+  font-size: 45pt;
+  margin-top: 30%;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+#currentCall>h3{
+  color: #aaaaaa;
+  font-size: 25pt;
+  margin-top: 15px;
+  text-align: center;
+}
+
+#currentCall>h2{
+  margin-top: 15%;
+  font-size: 28pt;
+  text-align: center;
+}
+
+.centerButton {
+  font-size: larger;
+  display: flex;
+  margin: auto auto;
+  margin-top: 25%;
+}

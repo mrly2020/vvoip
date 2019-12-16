@@ -1,0 +1,71 @@
+<div [ngStyle]="{'max-height': maxHeight(), 'min-height': maxHeight()}" id="tri-fold">
+  <mat-card id="rolodex" class="mat-elevation-z2">
+
+    <div class='stay ltr'>
+      <h2> Contacts
+        <button matTooltipClass="tooltip-larger" matTooltip='Add Contact' color='primary' (click)='addContact()'
+        style="float: right; margin-right: 10px;" mat-icon-button>
+          <mat-icon style='font-size: 35px; width: 35px;'>add_circle</mat-icon>
+        </button>
+      </h2>
+      <mat-divider></mat-divider>
+    </div>
+
+    <span class='ltr' *ngFor="let contact of contacts">
+      <mat-card class="contact" *ngIf='contact.name != null'>
+        <div class="contact-grid">
+          <mat-card-title><a [routerLink]="" (click)='dial(contact.phone)'>{{contact.name}}</a></mat-card-title>
+          <mat-card-subtitle><a class='subtitle-link' [routerLink]="" (click)='dial(contact.phone)'>{{contact.phone}}</a></mat-card-subtitle>
+
+          <mat-icon class="contact-status two-way-verified"
+          *ngIf="contact.contactKey != null && contact.callMade" matTooltipClass="tooltip-larger" matTooltip="Trusted; You have called eachother">done_all</mat-icon>
+          <mat-icon class="contact-status one-way-verified"
+          *ngIf="contact.contactKey != null && !contact.callMade" matTooltipClass="tooltip-larger" matTooltip="They have called you">call_missed</mat-icon>
+          <mat-icon class="contact-status one-way-verified"
+          *ngIf="contact.contactKey == null && contact.callMade" matTooltipClass="tooltip-larger" matTooltip="You have called them">call_made</mat-icon>
+          <mat-icon class="contact-status unknown"
+          *ngIf="contact.contactKey == null && !contact.callMade" matTooltipClass="tooltip-larger" matTooltip="Unkown Contact">trip_origin</mat-icon>
+        </div>
+      </mat-card>
+    </span>
+  </mat-card>
+
+  <mat-card id="details" class="mat-elevation-z2">
+
+    <div class='stay ltr'>
+      <h2> Call History </h2>
+      <mat-divider></mat-divider>
+    </div>
+
+    <span class='ltr'>
+      <mat-card class="call" *ngFor="let call of calls">
+        <div class="call-grid">
+          <mat-card-title>
+            <span matTooltipClass="tooltip-larger" matTooltip='{{call.caller == personalNo ? call.target : call.caller}}' [ngClass]='{"caller-id": !call.myContact, "missed": call.missed}'>
+              <a [routerLink]='' (click)='dial(call.caller == personalNo ? call.target : call.caller)'>{{call.caller == personalNo ? getId(call.target) : call.name}}</a>
+            </span>
+            <span class='time'>{{call.date | date}}, {{call.startTime.split(':')[0]}}:{{call.startTime.split(':')[1]}}
+
+              <mat-icon class="contact-status two-way-verified"
+              *ngIf="getContact(call.caller == personalNo ? call.target : call.caller).contactKey != null && getContact(call.caller == personalNo ? call.target : call.caller).callMade"
+              matTooltipClass="tooltip-larger" matTooltip="Trusted; You have called eachother">done_all</mat-icon>
+              <mat-icon class="contact-status one-way-verified"
+              *ngIf="getContact(call.caller == personalNo ? call.target : call.caller).contactKey != null && !getContact(call.caller == personalNo ? call.target : call.caller).callMade"
+              matTooltipClass="tooltip-larger" matTooltip="They have called you">call_missed</mat-icon>
+              <mat-icon class="contact-status one-way-verified"
+              *ngIf="getContact(call.caller == personalNo ? call.target : call.caller).contactKey == null && getContact(call.caller == personalNo ? call.target : call.caller).callMade"
+              matTooltipClass="tooltip-larger" matTooltip="You have called them">call_made</mat-icon>
+              <mat-icon class="contact-status unknown"
+              *ngIf="getContact(call.caller == personalNo ? call.target : call.caller).contactKey == null && !getContact(call.caller == personalNo ? call.target : call.caller).callMade"
+              matTooltipClass="tooltip-larger" matTooltip="Unkown Contact">trip_origin</mat-icon>
+            </span>
+          </mat-card-title>
+          <mat-card-subtitle>{{whoCalled(call.caller)}}</mat-card-subtitle>
+        </div>
+      </mat-card>
+    </span>
+  </mat-card>
+
+  <app-keypad></app-keypad>
+
+</div>

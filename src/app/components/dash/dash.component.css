@@ -34,8 +34,9 @@
   direction: ltr;
 }
 
-a:link{
-  color: black;
+a{
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 a:visited{

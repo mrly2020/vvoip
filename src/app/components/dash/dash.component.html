@@ -14,8 +14,8 @@
     <span class='ltr' *ngFor="let contact of contacts">
       <mat-card class="contact" *ngIf='contact.name != null'>
         <div class="contact-grid">
-          <mat-card-title><a [routerLink]="" (click)='dial(contact.phone)'>{{contact.name}}</a></mat-card-title>
-          <mat-card-subtitle><a class='subtitle-link' [routerLink]="" (click)='dial(contact.phone)'>{{contact.phone}}</a></mat-card-subtitle>
+          <mat-card-title><a (click)='dial(contact.phone)'>{{contact.name}}</a></mat-card-title>
+          <mat-card-subtitle><a class='subtitle-link' (click)='dial(contact.phone)'>{{contact.phone}}</a></mat-card-subtitle>
 
           <mat-icon class="contact-status two-way-verified"
           *ngIf="contact.contactKey != null && contact.callMade" matTooltipClass="tooltip-larger" matTooltip="Trusted; You have called eachother">done_all</mat-icon>
@@ -42,7 +42,7 @@
         <div class="call-grid">
           <mat-card-title>
             <span matTooltipClass="tooltip-larger" matTooltip='{{call.caller == personalNo ? call.target : call.caller}}' [ngClass]='{"caller-id": !call.myContact, "missed": call.missed}'>
-              <a [routerLink]='' (click)='dial(call.caller == personalNo ? call.target : call.caller)'>{{call.caller == personalNo ? getId(call.target) : call.name}}</a>
+              <a (click)='dial(call.caller == personalNo ? call.target : call.caller)'>{{call.caller == personalNo ? getId(call.target) : call.name}}</a>
             </span>
             <span class='time'>{{call.date | date}}, {{call.startTime.split(':')[0]}}:{{call.startTime.split(':')[1]}}
 
